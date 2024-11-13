@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
     { 
       "id": "1",
@@ -32,6 +34,59 @@ app.get('/', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
+})
+
+app.get('/info', (request, response) => {
+  const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Bucharest"})); // timezone ex: Asia/Jerusalem
+  const date = `<p>${d}</p>`
+  const personsLen = `<p>Phonebook has info for ${persons.length} people</p>`
+  const res = `<div>${personsLen}${date}</div>`
+  response.send(res)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  const person = persons.find(person => person.id === id)
+  if (person) {
+    response.json(person)
+  }
+  else {
+    response.status(404).end()
+  }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  persons = persons.filter(person => person.id !== id)
+
+  response.status(204).end()
+})
+
+function generateId(min, max) {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  return String(Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled)); // The maximum is exclusive and the minimum is inclusive
+}
+app.post('/api/persons/', (request, response) => {
+  const body = request.body
+
+  const doesPersonExist = persons.find(person => person.name === body.name)
+
+  if (!body.name || !body.number || doesPersonExist) {
+    return response.status(400).json({
+      error: 'Either person already exists or name or number missing'
+    })
+  }
+
+  const person = { 
+    "id": generateId(0, 1000000),
+    "name": body.name, 
+    "number": body.number
+  }
+
+  persons = persons.concat(person)
+
+  response.json(person)
 })
 
 const PORT = 3001
