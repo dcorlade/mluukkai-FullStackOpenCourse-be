@@ -10,33 +10,6 @@ app.use(express.json())
 app.use(morgan('tiny'))
 app.use(express.static('dist'))
 
-let persons = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
-})
-
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
@@ -46,9 +19,11 @@ app.get('/api/persons', (request, response) => {
 app.get('/info', (request, response) => {
   const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Bucharest"})); // timezone ex: Asia/Jerusalem
   const date = `<p>${d}</p>`
-  const personsLen = `<p>Phonebook has info for ${persons.length} people</p>`
-  const res = `<div>${personsLen}${date}</div>`
-  response.send(res)
+  Person.countDocuments({}).then(count => {
+    const personsLen = `<p>Phonebook has info for ${count} people</p>`;
+    const res = `<div>${personsLen}${date}</div>`;
+    response.send(res);
+  }).catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
