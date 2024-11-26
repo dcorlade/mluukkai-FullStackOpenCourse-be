@@ -16,13 +16,13 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/info', (request, response) => {
-  const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Europe/Bucharest"})); // timezone ex: Asia/Jerusalem
+app.get('/info', (request, response, next) => {
+  const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Bucharest' })) // timezone ex: Asia/Jerusalem
   const date = `<p>${d}</p>`
   Person.countDocuments({}).then(count => {
-    const personsLen = `<p>Phonebook has info for ${count} people</p>`;
-    const res = `<div>${personsLen}${date}</div>`;
-    response.send(res);
+    const personsLen = `<p>Phonebook has info for ${count} people</p>`
+    const res = `<div>${personsLen}${date}</div>`
+    response.send(res)
   }).catch(error => next(error))
 })
 
@@ -34,24 +34,24 @@ app.get('/api/persons/:id', (request, response, next) => {
       response.status(404).end()
     }
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
-  Person.findByIdAndUpdate(request.params.id, { name, number }, {runValidators: true, context: 'query' })
+  Person.findByIdAndUpdate(request.params.id, { name, number }, { runValidators: true, context: 'query' })
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
     .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  Person.findByIdAndDelete(request.params.id).then(_ => {
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id).then(() => {
     response.status(204).end()
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.post('/api/persons/', (request, response, next) => {
@@ -65,7 +65,7 @@ app.post('/api/persons/', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -84,7 +84,7 @@ const errorHandler = (error, request, response, next) => {
 app.use(errorHandler)
 
 // Completed exercise 3.9
-const PORT = process.env.PORT 
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
