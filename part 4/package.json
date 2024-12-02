@@ -1,0 +1,26 @@
+{
+  "name": "part-4",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../mluukkai-FullStackOpenCourse/part2/phonebook && npm run build && cp -r dist ../../../mluukkai-FullStackOpenCourse-be",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcorlade/mluukkai-FullStackOpenCourse-be.git"
+  },
+  "author": "Denis Corlade",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
