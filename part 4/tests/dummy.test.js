@@ -85,3 +85,67 @@ describe('total likes', () => {
         assert.strictEqual(result, 36)
       })
 })
+
+describe('favorite blog', () => {
+    test('should return the blog with the most likes', () => {
+    const blogs = [
+    {
+        _id: "5a422a851b54a676234d17f7",
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 7,
+        __v: 0
+    },
+    {
+        _id: "5a422b851b54a676234d17f8",
+        title: "Go To Statement Considered Harmful",
+        author: "Edsger W. Dijkstra",
+        url: "http://www.ucl.ac.uk/",
+        likes: 5,
+        __v: 0
+    },
+    {
+        _id: "5a422b851b54a676234d17f9",
+        title: "Canonical string reduction",
+        author: "Edsger W. Dijkstra",
+        url: "http://www.ucl.ac.uk/",
+        likes: 12,
+        __v: 0
+    }
+    ];
+
+    const result = listHelper.favoriteBlog(blogs);
+    assert.deepStrictEqual(result, {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    likes: 12
+    });
+});
+
+test('should return null for an empty list', () => {
+    const result = listHelper.favoriteBlog([]);
+    assert.deepStrictEqual(result, null);
+});
+
+test('should return the blog with the most likes', () => {
+    const blogs = [
+    {
+        _id: "5a422a851b54a676234d17f7",
+        title: "Single Blog",
+        author: "Author Name",
+        url: "https://singleblog.com/",
+        likes: 5,
+        __v: 0
+    }
+    ];
+
+    const result = listHelper.favoriteBlog(blogs);
+    assert.deepStrictEqual(result, {
+    title: "Single Blog",
+    author: "Author Name",
+    likes: 5
+    });
+});
+});
+  
