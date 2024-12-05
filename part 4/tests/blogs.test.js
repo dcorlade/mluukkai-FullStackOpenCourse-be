@@ -20,6 +20,12 @@ test('all blogs are returned', async () => {
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
+test('unique id is defined', async () => {
+  const response = await api.get('/api/blogs')
+  const receivedBlog = response.body[0]
+  assert(receivedBlog.id !== undefined)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
