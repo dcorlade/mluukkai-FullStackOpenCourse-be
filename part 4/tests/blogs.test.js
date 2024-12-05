@@ -36,11 +36,27 @@ test('adding one note matches length', async () => {
   const blogsAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
-  const contents = blogsAtEnd.map(n => {
-    console.log(n.title)
-    return n.title
-  })
+  const contents = blogsAtEnd.map(n => n.title)
   assert(contents.includes('Weird name'))
+})
+
+test('likes are defaulted to zero', async () => {
+  const blogToAdd = {
+    title: 'First class tests',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+  }
+  await api
+    .post('/api/blogs')
+    .send(blogToAdd)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+  const receivedBlog = blogsAtEnd[blogsAtEnd.length - 1]
+  assert.strictEqual(0, receivedBlog.likes)
 })
 
 after(async () => {
