@@ -59,6 +59,26 @@ test('likes are defaulted to zero', async () => {
   assert.strictEqual(0, receivedBlog.likes)
 })
 
+test('title or url missing results in bad request', async () => {
+  const blogToAddWithoutTitle = {
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+  }
+  const blogToAddWithoutUrl = {
+    title: 'Random title',
+    author: 'Robert C. Martin',
+  }
+  await api
+    .post('/api/blogs')
+    .send(blogToAddWithoutTitle)
+    .expect(400)
+
+  await api
+    .post('/api/blogs')
+    .send(blogToAddWithoutUrl)
+    .expect(400)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
