@@ -26,7 +26,7 @@ test('unique id is defined', async () => {
   assert(receivedBlog.id !== undefined)
 })
 
-test('adding one note matches length', async () => {
+test('adding one blog matches length', async () => {
   await api
     .post('/api/blogs')
     .send(helper.oneBlog)
