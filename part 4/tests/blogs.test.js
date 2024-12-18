@@ -4,14 +4,21 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
+const jwt = require('jsonwebtoken')
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
+
+let token
 
 beforeEach(async () => {
   await Blog.deleteMany({})
 
   await Blog.insertMany(helper.initialBlogs)
+
+  const user = await User.findOne({ username: 'root' })
+  token = jwt.sign({ id: user._id }, process.env.SECRET)
 })
 
 test('all blogs are returned', async () => {
@@ -29,6 +36,7 @@ test('unique id is defined', async () => {
 test('adding one blog matches length', async () => {
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(helper.oneBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -48,6 +56,7 @@ test('likes are defaulted to zero', async () => {
   }
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(blogToAdd)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -70,13 +79,27 @@ test('title or url missing results in bad request', async () => {
   }
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(blogToAddWithoutTitle)
     .expect(400)
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(blogToAddWithoutUrl)
     .expect(400)
+})
+
+test('blog can\'t be added if token is invalid or missing', async () => {
+  const blogToAdd = {
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(blogToAdd)
+    .expect(401)
 })
 
 after(async () => {
