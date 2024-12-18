@@ -1,5 +1,13 @@
 const logger = require('./logger')
 
+// declare global {
+//   namespace Express {
+//       interface Request {
+//           myProp?: boolean;
+//       }
+//   }
+// }
+
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
   logger.info('Path:  ', request.path)
@@ -33,8 +41,22 @@ const errorHandler = (error, request, response, next) => {
 }
 
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
+  }
+  else {
+    request.token = null
+  }
+
+  next()
+}
+
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 }
