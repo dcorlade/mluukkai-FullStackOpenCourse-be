@@ -31,4 +31,15 @@ blogSchema.set('toJSON', {
   }
 })
 
+blogSchema.pre('findOneAndDelete', async function(next) {
+  const blog = await this.model.findOne(this.getQuery())
+  if (blog) {
+    await mongoose.model('User').updateOne(
+      { _id: blog.user },
+      { $pull: { blogs: blog._id } }
+    )
+  }
+  next()
+})
+
 module.exports = mongoose.model('Blog', blogSchema)
