@@ -191,7 +191,8 @@ describe('when there is initially some blogs saved', () => {
       title: 'Updated Blog',
       author: 'Updated Author',
       url: 'http://example.com/updated',
-      likes: 10
+      likes: 10,
+      user: testUser
     }
 
     await api
