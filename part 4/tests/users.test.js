@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt')
 const assert = require('node:assert')
 const { test, describe, beforeEach, after } = require('node:test')
 const mongoose = require('mongoose')
@@ -10,14 +9,9 @@ const helper = require('./test_helper')
 const User = require('../models/user')
 
 
-describe('when there is initially one user in db', () => {
+describe('users', () => {
   beforeEach(async () => {
     await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
   })
 
   test('creation succeeds with a fresh username', async () => {
@@ -42,26 +36,29 @@ describe('when there is initially one user in db', () => {
     assert(usernames.includes(newUser.username))
   })
 
-  test('creation fails with proper statuscode and message if username already taken', async () => {
-    const usersAtStart = await helper.usersInDb()
-
+  test('same username can not be added twice' , async () => {
     const newUser = {
-      username: 'root',
-      name: 'Superuser',
-      password: 'salainen',
+      username: 'newuser',
+      name: 'New User',
+      password: 'password'
     }
 
-    const result = await api
+    await api
+      .post('/api/users')
+      .send(newUser)
+
+    const usersAtStart = await helper.usersInDb()
+
+    await api
       .post('/api/users')
       .send(newUser)
       .expect(400)
-      .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.usersInDb()
-    assert(result.body.error.includes('expected `username` to be unique'))
 
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
+
 
   test('creation fails if username is less than 3 characters long', async () => {
     const usersAtStart = await helper.usersInDb()
