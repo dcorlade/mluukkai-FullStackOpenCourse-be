@@ -56,12 +56,14 @@ router.delete('/:id', userExtractor, async (request, response) => {
 
 router.put('/:id', async (request, response) => {
   const { title, author, url, likes, user } = request.body
+  console.log('LIKES: ' + likes)
   const updatedBlog = await Blog.findByIdAndUpdate(
     request.params.id,
     { title, author, url, likes, user: user.id },
-    { runValidators: true, context: 'query' }
+    { new: true, runValidators: true, context: 'query' }
   ).populate('user', { username: 1, name: 1 })
   response.json(updatedBlog)
+  console.log('THE UPDATED ' + updatedBlog.likes)
 })
 
 module.exports = router
